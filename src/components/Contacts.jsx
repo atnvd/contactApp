@@ -1,9 +1,15 @@
 import { useState } from "react"
+import { v4 } from "uuid"
+
 import ContactsList from "./ContactsList"
+import inputs from "../constants/inputs"
+
 
 const Contacts = () => {
   const [contacts, setContacts] = useState([])
+  const [alert, setAlert] = useState("")
   const [contact, setContact] = useState({
+    id: "",
     name: "",
     lastName: "",
     email: "",
@@ -19,8 +25,13 @@ const Contacts = () => {
   }
 
   const addHandler = () => {
-    
-    setContacts((contacts) => ([...contacts,contact]));
+    if (!contact.name || !contact.lastName || !contact.email || !contact.phone) {
+      setAlert("please enter valid data")
+      return;
+    }
+    setAlert("");
+    const newContact = { ...contact, id: v4() }
+    setContacts((contacts) => ([...contacts, newContact]));
     setContact({
       name: "",
       lastName: "",
@@ -29,16 +40,29 @@ const Contacts = () => {
     })
   }
 
+  const deleteHandler = (id) => {
+    const newContacts = contacts.filter((contact) => contact.id !== id)
+    setContacts(newContacts)
+  }
+
   return (
     <div>
       <div>
-        <input type="text" placeholder="Name" name="name" value={contact.name} onChange={changeHandler} />
-        <input type="text" placeholder="Last Name" name="lastName" value={contact.lastName} onChange={changeHandler} />
-        <input type="email" placeholder="Email " name="email" value={contact.email} onChange={changeHandler} />
-        <input type="number" placeholder="Phone" name="phone" value={contact.phone} onChange={changeHandler} />
+        {
+          inputs.map((input, index) => (
+            <input
+              key={index}
+              type={input.type}
+              placeholder={input.placeholder}
+              name={input.name}
+              value={contact[input.name]}
+              onChange={changeHandler}
+            />))
+        }
         <button onClick={addHandler}>Add Contact</button>
       </div>
-      <ContactsList contacts={contacts}/>
+      <div>{alert && <p>{alert}</p>}</div>
+      <ContactsList contacts={contacts} deleteHandler={deleteHandler} />
     </div>
   )
 }

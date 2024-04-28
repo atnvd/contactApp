@@ -1,12 +1,20 @@
+import ContactItem from "./ContactItem"
 
+const ContactsList = ({ contacts, deleteHandler }) => {
 
-const ContactsList = (props) => {
-    console.log(props)
-  return (
-    <div>
-      ContactsList
-    </div>
-  )
+    return (
+        <div>
+            <h3>Contact List</h3>
+            {contacts.length ? (
+                <ul>
+                    {contacts.map((contact) => (
+                        <ContactItem key={contact.id} data={contact} deleteHandler={deleteHandler} />
+                    ))}
+                </ul>
+            ) : <p>No Contacts Yet!</p>}
+
+        </div>
+    )
 }
 
 export default ContactsList
